@@ -82,7 +82,7 @@ pip install -r requirements.txt
 
 The full project report is available at:
 
-- [Credit Scoring Report](docs/Credit_Model.pdf)
+- [Credit Model Report](docs/Credit_Model.pdf)
 
 ---
 
