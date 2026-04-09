@@ -57,11 +57,58 @@ graph LR
 
 
 ### Project Structure
+```mermaid
+graph LR
+    ROOT[Credit_Model/]
+
+    ROOT --> DATA[data/]
+    ROOT --> SRC[src/]
+    ROOT --> NB[notebooks/]
+    ROOT --> DOCS[docs/]
+    ROOT --> MAIN[main.py]
+    ROOT --> REQ[requirements.txt]
+    ROOT --> README[README.md]
+
+    DATA --> dataset[dataset.csv]
+    DATA --> results[results.csv]
+
+    SRC --> DATAR[data/]
+    SRC --> MODELING[modeling/]
+    SRC --> VIZ[visualization/]
+    SRC --> UTILS[utils/]
+    SRC --> MODELS[models/]
+
+    DATAR --> dp[data_preparation.py]
+    DATAR --> ds[data_splitter.py]
+
+    MODELING --> bm[base_model.py]
+    MODELING --> bl[business_logic.py]
+    MODELING --> cm[classification_model.py]
+    MODELING --> cfg[config.py]
+    MODELING --> me[model_evaluation.py]
+    MODELING --> mod[model.py]
+    MODELING --> rc[risk_calculator.py]
+
+    VIZ --> viz[viz.py]
+
+    UTILS --> prints[prints.py]
+
+    MODELS --> rf[random_forest.pkl]
+
+    NB --> notebook[notebook.ipynb]
+
+    DOCS --> pdf[Credit_Model.pdf]
+
+```
 
 ### Functional Architecture
 
 ### OOP Architecture
+```mermaid
 
+
+
+```
 ---
 
 
