@@ -58,7 +58,7 @@ graph LR
 
 ### Project Structure
 ```mermaid
-graph LR
+flowchart TD
     ROOT[Credit_Model/]
 
     ROOT --> DATA[data/]
