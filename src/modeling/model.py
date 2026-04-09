@@ -1,4 +1,4 @@
-from classification_model import ClassificationModel
+from src.modeling.classification_model import ClassificationModel
 
 
 class Model:

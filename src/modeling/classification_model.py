@@ -1,7 +1,7 @@
 import joblib
 import pandas as pd
-from config import MODEL_CONFIG
-from modeling.base_model import BaseModel
+from src.modeling.config import MODEL_CONFIG
+from src.modeling.base_model import BaseModel
 from xgboost.sklearn import XGBClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
