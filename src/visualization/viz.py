@@ -50,7 +50,40 @@ class Visualization:
         plt.ylabel("Actual")
         plt.tight_layout()
         plt.show()
+        
+    def plot_pd_vs_interest(self, data):
+        plt.figure(figsize=(7, 5))
+        plt.scatter(data['predicted_pd'], data['interest_rate'])
+        plt.xlabel("Predicted PD")
+        plt.ylabel("Interest Rate")
+        plt.title("PD vs Interest Rate")
+        plt.show()
+        
+    def plot_expected_loss_distribution(self, data):
+        plt.figure(figsize=(7, 5))
+        plt.hist(data['expected_loss'], bins=50)
+        plt.xlabel("Expected Loss")
+        plt.title("Distribution of Expected Loss")
+        plt.show()
+        
+    def plot_pd_by_bucket(self, data):
+        data.groupby('risk_bucket')['predicted_pd'].mean().plot(kind='bar')
 
-    def plot_all(self, results):
+        plt.title("Average PD by Risk Bucket")
+        plt.xlabel("Risk Bucket")
+        plt.ylabel("Average PD")
+        plt.show()
+        
+    def plot_expected_loss_by_bucket(self, data):
+        data.groupby('risk_bucket')['expected_loss'].mean().plot(kind='bar')
+
+        plt.title("Expected Loss by Risk Bucket")
+        plt.show()
+
+    def plot_all(self, results, data):
         self.plot_roc_curve(results['y_test'], results['y_prob'])
         self.plot_confusion_matrix(results['y_test'], results['y_pred'])
+        self.plot_pd_vs_interest(data)
+        self.plot_expected_loss_distribution(data)
+        self.plot_pd_by_bucket(data)
+        self.plot_expected_loss_by_bucket(data)

@@ -23,7 +23,7 @@ def main():
     
     # 5. Visualizations results
     viz = Visualization()
-    viz.plot_all(results)
+    viz.plot_all(results, data_final)
         
     # 6. Save results
     data_final.to_csv("data/results.csv", index=False)
