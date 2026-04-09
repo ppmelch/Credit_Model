@@ -220,47 +220,35 @@ graph LR
 ```mermaid
 flowchart LR
 
-    %% ======================
     %% INPUT
-    %% ======================
     A[Raw Data] --> B[Data Preparation]
 
-    %% ======================
     %% DATA
-    %% ======================
     B --> C[X, y]
-    C --> D[Train/Test Split]
+    C --> D[Train Test Split]
 
     D --> Xtr[X_train]
     D --> Xte[X_test]
     D --> Ytr[y_train]
     D --> Yte[y_test]
 
-    %% ======================
     %% MODEL
-    %% ======================
     Xtr --> E[Model Selection]
     E --> F[Train Model]
 
-    %% ======================
     %% PREDICTIONS
-    %% ======================
-    F --> G[Predict y_pred (Test)]
-    F --> H[Predict PD (Test)]
-    F --> I[Predict PD (Train)]
+    F --> G[Predict y_pred Test]
+    F --> H[Predict PD Test]
+    F --> I[Predict PD Train]
 
-    %% ======================
     %% EVALUATION
-    %% ======================
     G --> J[Model Evaluation]
     H --> J
     I --> J
     Yte --> J
     Ytr --> J
 
-    %% ======================
     %% RISK
-    %% ======================
     F --> K[PD Full Dataset]
     K --> L[EAD]
     K --> M[LGD]
@@ -269,30 +257,21 @@ flowchart LR
     L --> N
     M --> N
 
-    %% ======================
     %% BUSINESS LOGIC
-    %% ======================
     K --> O[Credit Decision]
     K --> P[Risk Buckets]
 
-    %% ======================
     %% OUTPUT
-    %% ======================
     N --> Q[Final Dataset]
     O --> Q
     P --> Q
 
-    %% ======================
     %% SAVE
-    %% ======================
     F --> R[Save Model]
 
-    %% ======================
     %% RESULTS
-    %% ======================
     J --> S[Results Metrics]
-    Q --> T[Enriched Dataset]
-```
+    Q --> T[Enriched Dataset]```
 
 ---
 
