@@ -1,0 +1,107 @@
+classDiagram
+
+%% ======================
+%% ENTRY POINT
+%% ======================
+class main {
+    +main()
+}
+
+main --> CreditPipeline
+
+%% ======================
+%% PIPELINE (ORCHESTRATOR)
+%% ======================
+class CreditPipeline {
+    -data
+    -model_name
+    +run()
+}
+
+CreditPipeline --> DataPreparation
+CreditPipeline --> DataSplitter
+CreditPipeline --> Model
+CreditPipeline --> ModelEvaluation
+CreditPipeline --> RiskCalculator
+CreditPipeline --> BusinessLogic
+
+%% ======================
+%% DATA LAYER
+%% ======================
+class DataPreparation {
+    +prepare_data()
+}
+
+class DataSplitter {
+    +split(X, y)
+}
+
+%% ======================
+%% MODEL LAYER
+%% ======================
+class BaseModel {
+    <<abstract>>
+    +train()
+    +predict()
+    +predict_proba()
+}
+
+class ClassificationModel {
+    +train()
+    +predict()
+    +predict_proba()
+    +save_model()
+    +load_model()
+}
+
+BaseModel <|-- ClassificationModel
+
+class Model {
+    +get_model()
+}
+
+Model --> ClassificationModel
+
+%% ======================
+%% EVALUATION
+%% ======================
+class ModelEvaluation {
+    +evaluate()
+    +evaluate_full()
+}
+
+%% ======================
+%% RISK LAYER
+%% ======================
+class RiskCalculator {
+    +calculate_pd()
+    +calculate_ead()
+    +calculate_lgd()
+    +calculate_expected_loss()
+}
+
+RiskCalculator --> ClassificationModel
+
+%% ======================
+%% BUSINESS LOGIC
+%% ======================
+class BusinessLogic {
+    +credit_decision()
+    +risk_buckets()
+}
+
+BusinessLogic --> RiskCalculator
+
+%% ======================
+%% OUTPUT LAYER
+%% ======================
+class PrintUtils {
+    +print_all()
+}
+
+class Visualization {
+    +plot_all()
+}
+
+main --> PrintUtils
+main --> Visualization
