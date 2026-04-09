@@ -25,7 +25,6 @@ MODEL_CONFIG = {
     },
 
     "xgboost": {
-        "use_label_encoder": False,
         "eval_metric": "logloss",
         "n_estimators": 100,
         "learning_rate": 0.1,

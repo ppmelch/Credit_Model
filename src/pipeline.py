@@ -1,6 +1,7 @@
 from src.modeling.model import Model
 from src.modeling.config import MODELS_DIR
 from src.data.data_splitter import DataSplitter
+from sklearn.preprocessing import StandardScaler
 from src.data.data_preparation import DataPreparation
 from src.modeling.business_logic import BusinessLogic
 from src.modeling.risk_calculator import RiskCalculator
@@ -8,27 +9,12 @@ from src.modeling.model_evaluation import ModelEvaluation
 
 
 class CreditPipeline:
-    """
-    End-to-end pipeline for credit risk modeling.
-
-    This pipeline handles data preparation, model training,
-    evaluation, prediction, and model persistence.
-    """
 
     def __init__(self, data, model_name="logistic"):
         self.data = data
         self.model_name = model_name
 
-
     def run(self):
-        """
-        Execute the full pipeline.
-
-        Returns
-        -------
-        dict
-            Model evaluation results.
-        """
 
         # 1. Data preparation
         prep = DataPreparation(self.data)
@@ -37,6 +23,11 @@ class CreditPipeline:
         # 2. Split
         splitter = DataSplitter()
         X_train, X_test, y_train, y_test = splitter.split(X, y)
+
+        # 2.5 Scaling
+        scaler = StandardScaler()
+        X_train = scaler.fit_transform(X_train)
+        X_test = scaler.transform(X_test)
 
         # 3. Model
         model = Model.get_model("classification", self.model_name)
@@ -51,29 +42,26 @@ class CreditPipeline:
         # 6. Evaluate
         evaluator = ModelEvaluation()
         results = evaluator.evaluate(y_test, y_pred, y_pred_proba)
-
+        
         # 7. PD for full dataset
-        pd_values = model.predict_proba(X)
+        X_scaled = scaler.transform(X)
+        pd_values = model.predict_proba(X_scaled)
         self.data["predicted_pd"] = pd_values
 
         # 8. Risk metrics
         risk = RiskCalculator(lgd=0.45)
-
         ead = risk.calculate_ead(self.data)
         lgd = risk.calculate_lgd(self.data)
 
         self.data['expected_loss'] = risk.calculate_expected_loss(
-            pd_values, lgd, ead
-        )
+            pd_values, lgd, ead)
 
-        # Add risk buckets
-
-        logic = BusinessLogic(threshold=0.5)
-
+        # 9. Business logic
+        logic = BusinessLogic(threshold=0.4)
         self.data['decision'] = logic.credit_decision(pd_values)
         self.data['risk_bucket'] = logic.risk_buckets(pd_values)
 
-        # 9. Save model
+        # 10. Save model
         model.save_model(f"{self.model_name}.pkl", MODELS_DIR)
 
         return results, self.data
