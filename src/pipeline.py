@@ -1,7 +1,8 @@
-from src.data.data_preparation import Data_preparation
+from src.data.data_preparation import DataPreparation
 from src.data.data_splitter import DataSplitter
 from src.modeling.model import Model
 from src.modeling.model_evaluation import ModelEvaluation
+from src.modeling.risk_calculator import RiskCalculator
 from src.modeling.config import MODELS_DIR
 
 
@@ -17,7 +18,7 @@ class CreditPipeline:
         self.data = data
         self.model_name = model_name
 
-    def run(self):
+def run(self):
         """
         Execute the full pipeline.
 
@@ -28,7 +29,7 @@ class CreditPipeline:
         """
 
         # 1. Data preparation
-        prep = Data_preparation(self.data)
+        prep = DataPreparation(self.data)
         X, y = prep.prepare_data()
 
         # 2. Split
@@ -50,9 +51,20 @@ class CreditPipeline:
         results = evaluator.evaluate(y_test, y_pred, y_pred_proba)
 
         # 7. PD for full dataset
-        self.data["predicted_pd"] = model.predict_proba(X)
+        pd_values = model.predict_proba(X)
+        self.data["predicted_pd"] = pd_values
 
-        # 8. Save model
+        # 8. Risk metrics
+        risk = RiskCalculator(lgd=0.45)
+
+        ead = risk.calculate_ead(self.data)
+        lgd = risk.calculate_lgd(self.data)
+
+        self.data['expected_loss'] = risk.calculate_expected_loss(
+            pd_values, lgd, ead
+        )
+
+        # 9. Save model
         model.save_model(f"{self.model_name}.pkl", MODELS_DIR)
 
         return results, self.data
