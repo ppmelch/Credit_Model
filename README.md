@@ -217,6 +217,7 @@ graph LR
 
 
 ### Flow Diagram
+```mermaid
 flowchart LR
 
     %% ======================
@@ -291,7 +292,7 @@ flowchart LR
     %% ======================
     J --> S[Results Metrics]
     Q --> T[Enriched Dataset]
-
+```
 
 ---
 
