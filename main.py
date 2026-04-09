@@ -1,6 +1,7 @@
 import pandas as pd
 from src.pipeline import CreditPipeline
-
+from src.utils.prints import PrintUtils
+from src.visualization.viz import Visualization
 
 def main():
     """
@@ -17,27 +18,15 @@ def main():
     results, data_final = pipeline.run()
 
     # 4. Print results
-    print("\n=== Model Evaluation ===")
-    for key, value in results.items():
-        print(f"{key}: {value}")
-
-    # 5. Show key business outputs
-    print("\n=== Sample Results ===")
-    print(data_final[['predicted_pd', 'expected_loss', 'decision']].head())
-
+    printer = PrintUtils(data_final)
+    printer.print_all(results)
+    
+    # 5. Visualizations results
+    viz = Visualization()
+    viz.plot_all(results)
+        
     # 6. Save results
     data_final.to_csv("data/results.csv", index=False)
-    
-    print("\n=== Risk Buckets (PD & Expected Loss) ===")
-    print(
-        data_final.groupby('risk_bucket')[['predicted_pd','expected_loss']].mean()
-    )
-
-    print("\n=== PD vs Interest Rate ===")
-    print(
-        data_final.groupby('risk_bucket')[['predicted_pd','interest_rate']].mean()
-    )
-
 
 if __name__ == "__main__":
     main()

@@ -42,6 +42,10 @@ class CreditPipeline:
         # 6. Evaluate
         evaluator = ModelEvaluation()
         results = evaluator.evaluate(y_test, y_pred, y_pred_proba)
+        results["y_test"] = y_test
+        results["y_pred"] = y_pred
+        results["y_prob"] = y_pred_proba
+        
         
         # 7. PD for full dataset
         X_scaled = scaler.transform(X)
