@@ -46,20 +46,17 @@ class CreditPipeline:
         results["y_pred"] = y_pred
         results["y_prob"] = y_pred_proba
         
-        
-        # 7. PD for full dataset
+        # 7. PD calculation
+        risk = RiskCalculator(lgd=0.45)
         X_scaled = scaler.transform(X)
-        pd_values = model.predict_proba(X_scaled)
+        pd_values = risk.calculate_pd(model, X_scaled)
         self.data["predicted_pd"] = pd_values
 
         # 8. Risk metrics
-        risk = RiskCalculator(lgd=0.45)
         ead = risk.calculate_ead(self.data)
         lgd = risk.calculate_lgd(self.data)
-
-        self.data['expected_loss'] = risk.calculate_expected_loss(
-            pd_values, lgd, ead)
-
+        self.data['expected_loss'] = risk.calculate_expected_loss(pd_values, lgd, ead)
+        
         # 9. Business logic
         logic = BusinessLogic(threshold=0.4)
         self.data['decision'] = logic.credit_decision(pd_values)

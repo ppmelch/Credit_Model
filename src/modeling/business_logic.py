@@ -7,7 +7,7 @@ class BusinessLogic:
     risk segmentation, and pricing logic.
     """
 
-    def __init__(self, threshold=0.5):
+    def __init__(self, threshold=0.4):
         self.threshold = threshold
 
     def credit_decision(self, pd_values: pd.Series) -> pd.Series:

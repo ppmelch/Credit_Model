@@ -9,8 +9,14 @@ def main():
     """
 
     # 1. Load data
-    data = pd.read_csv("data/dataset.csv")
+    from pathlib import Path
 
+    BASE_DIR = Path(__file__).resolve().parent
+    DATA_PATH = BASE_DIR / "data" / "dataset.csv"
+
+    data = pd.read_csv(DATA_PATH)
+    print(DATA_PATH)
+    print(DATA_PATH.exists())
     # 2. Initialize pipeline
     pipeline = CreditPipeline(data=data, model_name="xgboost")
 
@@ -19,14 +25,14 @@ def main():
 
     # 4. Print results
     printer = PrintUtils(data_final)
-    printer.print_all(results)
+    #printer.print_all(results)
     
     # 5. Visualizations results
     viz = Visualization()
     viz.plot_all(results, data_final)
         
     # 6. Save results
-    data_final.to_csv("data/results.csv", index=False)
+    #data_final.to_csv("data/results.csv", index=False)
 
 if __name__ == "__main__":
     main()
