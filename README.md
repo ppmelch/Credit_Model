@@ -23,39 +23,6 @@
 
 ## Architecture
 
-### Loan Lifecycle
-
-```mermaid
-graph LR
-    A([Applicant]) --> B[Personal Loan Application]
-
-    subgraph AP [Analysis Phase]
-        B --> C{Credit Assessment\nRisk Based Pricing}
-        C --> D[Credit History\nCredit Bureau]
-        C --> E[Capacity to Pay\nIncome / DTI]
-        C --> F[Credit Score\nFICO / VantageScore]
-        D --> G{Credit Decision}
-        E --> G
-        F --> G
-    end
-
-    subgraph LL [Loan Lifecycle]
-        G -->|Approved| H[Capital Disbursement\nTotal Amount]
-        H --> I[Fixed Term Contract\n12 to 84 months]
-        I --> J[Fixed Periodic Payments\nPrincipal + Interest + Fees]
-        J --> K{Payment Compliance?}
-        K -->|Yes| L[Positive Report\nCredit Bureau]
-        L --> M([Loan Closure])
-        K -->|No| N[Debt Collection Management\nPenalties / Negative Reports]
-        N --> O{Recovery?}
-        O -->|Yes| J
-        O -->|No| P([Loss / Write-off\nLoss Given Default])
-    end
-
-    G -->|Rejected| Q([Application Denied])
-```
-
-
 ### Project Structure
 ```mermaid
 flowchart TD
@@ -215,6 +182,117 @@ main --> Visualization
 
 
 ```
+
+### Loan Lifecycle
+
+```mermaid
+graph LR
+    A([Applicant]) --> B[Personal Loan Application]
+
+    subgraph AP [Analysis Phase]
+        B --> C{Credit Assessment\nRisk Based Pricing}
+        C --> D[Credit History\nCredit Bureau]
+        C --> E[Capacity to Pay\nIncome / DTI]
+        C --> F[Credit Score\nFICO / VantageScore]
+        D --> G{Credit Decision}
+        E --> G
+        F --> G
+    end
+
+    subgraph LL [Loan Lifecycle]
+        G -->|Approved| H[Capital Disbursement\nTotal Amount]
+        H --> I[Fixed Term Contract\n12 to 84 months]
+        I --> J[Fixed Periodic Payments\nPrincipal + Interest + Fees]
+        J --> K{Payment Compliance?}
+        K -->|Yes| L[Positive Report\nCredit Bureau]
+        L --> M([Loan Closure])
+        K -->|No| N[Debt Collection Management\nPenalties / Negative Reports]
+        N --> O{Recovery?}
+        O -->|Yes| J
+        O -->|No| P([Loss / Write-off\nLoss Given Default])
+    end
+
+    G -->|Rejected| Q([Application Denied])
+```
+
+
+### Flow Diagram
+flowchart LR
+
+    %% ======================
+    %% INPUT
+    %% ======================
+    A[Raw Data] --> B[Data Preparation]
+
+    %% ======================
+    %% DATA
+    %% ======================
+    B --> C[X, y]
+    C --> D[Train/Test Split]
+
+    D --> Xtr[X_train]
+    D --> Xte[X_test]
+    D --> Ytr[y_train]
+    D --> Yte[y_test]
+
+    %% ======================
+    %% MODEL
+    %% ======================
+    Xtr --> E[Model Selection]
+    E --> F[Train Model]
+
+    %% ======================
+    %% PREDICTIONS
+    %% ======================
+    F --> G[Predict y_pred (Test)]
+    F --> H[Predict PD (Test)]
+    F --> I[Predict PD (Train)]
+
+    %% ======================
+    %% EVALUATION
+    %% ======================
+    G --> J[Model Evaluation]
+    H --> J
+    I --> J
+    Yte --> J
+    Ytr --> J
+
+    %% ======================
+    %% RISK
+    %% ======================
+    F --> K[PD Full Dataset]
+    K --> L[EAD]
+    K --> M[LGD]
+
+    K --> N[Expected Loss]
+    L --> N
+    M --> N
+
+    %% ======================
+    %% BUSINESS LOGIC
+    %% ======================
+    K --> O[Credit Decision]
+    K --> P[Risk Buckets]
+
+    %% ======================
+    %% OUTPUT
+    %% ======================
+    N --> Q[Final Dataset]
+    O --> Q
+    P --> Q
+
+    %% ======================
+    %% SAVE
+    %% ======================
+    F --> R[Save Model]
+
+    %% ======================
+    %% RESULTS
+    %% ======================
+    J --> S[Results Metrics]
+    Q --> T[Enriched Dataset]
+
+
 ---
 
 
