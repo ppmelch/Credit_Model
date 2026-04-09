@@ -13,8 +13,11 @@ class BusinessLogic:
         Clients with PD below this threshold are approved.
     """
 
-    def __init__(self, threshold=0.4):
+    def __init__(self, threshold=0.4, LGD=0.45 , factor=1.5, rf=0.037):
         self.threshold = threshold
+        self.LGD = LGD
+        self.factor = factor
+        self.rf = rf
 
     def credit_decision(self, pd_values: pd.Series) -> pd.Series:
         """
@@ -64,3 +67,14 @@ class BusinessLogic:
         - If there are too many duplicate PD values, pd.qcut may raise an error.
         """
         return pd.qcut(pd_values, q=q)
+    
+    def calculate_interest_rate(self, pd_values: pd.Series) -> pd.Series:
+        """
+        Calculate interest rate based on risk (PD).
+
+        Higher PD -> higher interest rate.
+        """
+        
+        risk_premium = pd_values * self.LGD * self.factor
+
+        return self.rf + risk_premium

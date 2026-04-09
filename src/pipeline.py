@@ -87,9 +87,7 @@ class CreditPipeline:
 
         # 9. PD calculation (full dataset)
         risk = RiskCalculator(lgd=0.45)
-
         pd_values = risk.calculate_pd(model, X)
-
         self.data["predicted_pd"] = pd_values
 
         # 10. Risk metrics
@@ -101,10 +99,10 @@ class CreditPipeline:
         )
 
         # 11. Business logic
-        logic = BusinessLogic(threshold=0.4)
-
+        logic = BusinessLogic(threshold=0.4 , LGD=0.45 , factor=1.5 , rf=0.037)
         self.data["decision"] = logic.credit_decision(pd_values)
         self.data["risk_bucket"] = logic.risk_buckets(pd_values)
+        self.data["interest_rate_model"] = logic.calculate_interest_rate(pd_values)
 
         # 12. Save model
         model.save_model(f"{self.model_name}.pkl", MODELS_DIR)

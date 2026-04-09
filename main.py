@@ -38,11 +38,11 @@ def main():
 
     # == Print results (optional) ==
     printer = PrintUtils(data_final)
-    # printer.print_all(results) 
+    printer.print_all(results) 
 
     # == Visualizations ==
     viz = Visualization()
-    viz.plot_all(results, data_final)
+    #viz.plot_all(results, data_final)
 
     # == Save results (optional) ==
     # data_final.to_csv("data/results.csv", index=False)

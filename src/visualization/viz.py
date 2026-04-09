@@ -246,7 +246,7 @@ class Visualization:
 
         # == Scatter Plots ==
         self.plot_scatter(data, hue='loan_status',
-                          x='predicted_pd', y='interest_rate')
+                          x='predicted_pd', y='interest_rate_model')
 
         # == Distributions ==
         self.plot_distribution(
@@ -254,7 +254,7 @@ class Visualization:
         self.plot_distribution(
             data['expected_loss'], dataset_name="Distribution of", var_name="Expected Loss")
         self.plot_distribution(
-            data['interest_rate'], dataset_name="Distribution of", var_name="Interest Rate")
+            data['interest_rate_model'], dataset_name="Distribution of", var_name="Interest Rate")
         self.plot_distribution(
             results['y_prob'], dataset_name="Test Set - Distribution of", var_name="PD")
         self.plot_distribution(
@@ -267,4 +267,4 @@ class Visualization:
         # == Box Plots ==
         self.plot_boxplot(data, x='risk_bucket', y='predicted_pd')
         self.plot_boxplot(data, x='risk_bucket', y='expected_loss')
-        self.plot_boxplot(data, x='risk_bucket', y='interest_rate')
+        self.plot_boxplot(data, x='risk_bucket', y='interest_rate_model')

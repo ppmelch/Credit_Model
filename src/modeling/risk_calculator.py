@@ -94,12 +94,7 @@ class RiskCalculator:
         """
         return pd.Series(self.lgd, index=data.index)
 
-    def calculate_expected_loss(
-        self,
-        pd: pd.Series,
-        lgd: pd.Series,
-        ead: pd.Series
-    ) -> pd.Series:
+    def calculate_expected_loss(self, pd: pd.Series, lgd: pd.Series, ead: pd.Series) -> pd.Series:
         """
         Compute Expected Loss (EL).
 

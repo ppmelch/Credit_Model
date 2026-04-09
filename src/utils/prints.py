@@ -23,22 +23,20 @@ class PrintUtils:
         self.data = data
 
     def print_model_results(self, results: dict) -> None:
-        """
-        Display model evaluation metrics.
-
-        Parameters
-        ----------
-        results : dict
-            Dictionary containing evaluation metrics such as:
-            accuracy, precision, recall, F1-score, ROC-AUC, etc.
-
-        Notes
-        -----
-        Useful for quickly assessing model performance after training.
-        """
         print("\n=== Model Evaluation ===")
-        for key, value in results.items():
-            print(f"{key}: {value}")
+
+        metrics_to_show = [
+            "test_roc_auc",
+            "train_roc_auc",
+            "test_accuracy",
+            "test_precision",
+            "test_recall",
+            "test_f1_score",
+        ]
+
+        for key in metrics_to_show:
+            print(f"{key}: {results[key]}")
+
 
     def print_sample(self) -> None:
         """
@@ -87,7 +85,7 @@ class PrintUtils:
         print("\n=== PD vs Interest Rate ===")
         print(
             self.data.groupby('risk_bucket')[
-                ['predicted_pd', 'interest_rate']].mean()
+                ['predicted_pd', 'interest_rate_model']].mean()
         )
 
     def print_all(self, results: dict) -> None:
