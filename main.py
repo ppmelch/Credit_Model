@@ -21,7 +21,7 @@ def main():
     -----
     - The pipeline encapsulates the full modeling process, including:
         * Data preprocessing
-        * Model training (e.g., XGBoost)
+        * Model training (e.g., Random Forest)
         * Probability of Default (PD) estimation
         * Risk metric computation
     - Ensure that the dataset exists at the specified path before execution.
@@ -31,7 +31,7 @@ def main():
     data = pd.read_csv("data/dataset.csv")
 
     # == Initialize pipeline ==
-    pipeline = CreditPipeline(data=data, model_name="xgboost")
+    pipeline = CreditPipeline(data=data, model_name="random_forest")
 
     # == Run pipeline ==
     results, data_final = pipeline.run()

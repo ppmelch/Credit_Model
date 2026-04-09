@@ -19,9 +19,11 @@ MODEL_CONFIG = {
     },
 
     "random_forest": {
-        "n_estimators": 100,
+        "n_estimators": 1000,
         "max_depth": 6,
-        "random_state": 42
+        "random_state": 42,
+        "class_weight": "balanced",
+        "n_jobs": -1
     },
 
     "xgboost": {

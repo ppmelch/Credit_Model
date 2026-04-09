@@ -61,18 +61,13 @@ class CreditPipeline:
         splitter = DataSplitter()
         X_train, X_test, y_train, y_test = splitter.split(X, y)
 
-        # 3. Scaling
-        scaler = StandardScaler()
-        X_train = scaler.fit_transform(X_train)
-        X_test = scaler.transform(X_test)
-
-        # 4. Model selection
+        # 3. Model selection
         model = Model.get_model("classification", self.model_name)
 
-        # 5. Training
+        # 4. Training
         model.train(X_train, y_train)
 
-        # 6. Predictions (Test)
+        # 5. Predictions (Test)
         y_pred = model.predict(X_test)
         y_test_proba = model.predict_proba(X_test)
 
@@ -93,8 +88,7 @@ class CreditPipeline:
         # 9. PD calculation (full dataset)
         risk = RiskCalculator(lgd=0.45)
 
-        X_scaled = scaler.transform(X)
-        pd_values = risk.calculate_pd(model, X_scaled)
+        pd_values = risk.calculate_pd(model, X)
 
         self.data["predicted_pd"] = pd_values
 
