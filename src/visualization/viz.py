@@ -1,20 +1,41 @@
+import warnings
 import numpy as np
-import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-from sklearn.metrics import auc, roc_curve, confusion_matrix as sk_confusion_matrix
 from matplotlib.colors import LinearSegmentedColormap
+from sklearn.metrics import auc, roc_curve, confusion_matrix as sk_confusion_matrix
+
+warnings.filterwarnings("ignore", category=FutureWarning)
+warnings.filterwarnings("ignore", category=UserWarning)
 
 sns.set_theme(style="whitegrid", palette="Greys_r")
 plt.rcParams["figure.figsize"] = (12, 6)
 plt.rcParams["figure.dpi"] = 100
 
+
 class Visualization:
     """
-    Class for visualizing results and analyses in a consistent format.
+    Visualization utilities for evaluating and analyzing credit risk models.
+
+    Provides methods for plotting model performance metrics, distributions,
+    and relationships between key variables such as PD, expected loss, and interest rate.
     """
 
-    def plot_roc_curve(self, y_test, y_prob , name="Test Set"):
+    def plot_roc_curve(self, y_test, y_prob, name="Test Set"):
+        """
+        Plot the Receiver Operating Characteristic (ROC) curve.
+
+        Parameters
+        ----------
+        y_test : array-like
+            True binary labels.
+
+        y_prob : array-like
+            Predicted probabilities for the positive class.
+
+        name : str, optional
+            Label for the dataset (e.g., "Train Set", "Test Set").
+        """
         fpr, tpr, _ = roc_curve(y_test, y_prob)
         roc_auc = auc(fpr, tpr)
 
@@ -28,13 +49,20 @@ class Visualization:
         plt.show()
 
     def plot_confusion_matrix(self, y_test, y_pred):
+        """
+        Plot a confusion matrix with labeled cells.
+
+        Parameters
+        ----------
+        y_test : array-like
+            True labels.
+
+        y_pred : array-like
+            Predicted class labels.
+        """
         cm = sk_confusion_matrix(y_test, y_pred)
 
-        labels = np.array([
-            ["TN", "FP"],
-            ["FN", "TP"]
-        ])
-
+        labels = np.array([["TN", "FP"], ["FN", "TP"]])
         annotated = np.empty_like(cm).astype(str)
 
         for i in range(cm.shape[0]):
@@ -54,127 +82,86 @@ class Visualization:
         plt.ylabel("Actual")
         plt.tight_layout()
         plt.show()
-        
 
-    def plot_scatter(self, data , hue,  x , y):
+    def plot_scatter(self, data, hue, x, y):
+        """
+        Plot a scatter plot for two variables with optional hue grouping.
+
+        Parameters
+        ----------
+        data : pd.DataFrame
+            Dataset containing variables.
+
+        hue : str
+            Column name used for color grouping.
+
+        x : str
+            Column name for x-axis.
+
+        y : str
+            Column name for y-axis.
+        """
         plt.figure(figsize=(7, 5))
 
         sns.scatterplot(
             data=data,
             x=x,
             y=y,
+            hue=hue,
             palette=["#2c3e50", "#e74c3c"],
-            hue = hue,
             marker="^",
             s=70,
             alpha=0.8
         )
 
-        plt.xlabel("Predicted PD")
-        plt.ylabel("Interest Rate")
-        plt.title("PD vs Interest Rate")
+        plt.xlabel(x.replace('_', ' ').title())
+        plt.ylabel(y.replace('_', ' ').title())
+        plt.title(
+            f"{y.replace('_', ' ').title()} vs {x.replace('_', ' ').title()}")
         plt.legend(title=hue)
         plt.grid(alpha=0.2)
         plt.show()
 
-        
-    def plot_bar(self, data , x , y):
-        data.groupby(x)[y].mean().plot(kind='bar')
-
-        plt.title(f"Average {y.replace('_', ' ').title()} by Risk Bucket")
-        plt.xlabel("Risk Bucket")
-        plt.ylabel(f"Average {y.replace('_', ' ').title()}")
-        plt.xticks(rotation=0)
-        plt.grid(alpha = 0.2)
-        plt.show()
-        
-        
-    def plot_variable_distribution_by_status(self, values, loan_status, var_name="Variable", dataset_name="Train"):
+    def plot_bar(self, data, x, y):
         """
-        Visualizes the distribution of a numerical variable segmented by loan status.
+        Plot a bar chart of average values grouped by a categorical variable.
 
         Parameters
         ----------
-        values : array-like
-            Numerical variable (e.g., income, interest_rate, loan_amount).
+        data : pd.DataFrame
+            Dataset containing variables.
 
-        loan_status : array-like
-            Binary or categorical target (e.g., 0 = No Default, 1 = Default).
+        x : str
+            Grouping variable.
 
-        var_name : str
-            Name of the variable (for titles).
+        y : str
+            Numerical variable to average.
+        """
+        data.groupby(x)[y].mean().plot(kind='bar')
+
+        plt.title(
+            f"Average {y.replace('_', ' ').title()} by {x.replace('_', ' ').title()}")
+        plt.xlabel(x.replace('_', ' ').title())
+        plt.ylabel(f"Average {y.replace('_', ' ').title()}")
+        plt.xticks(rotation=0)
+        plt.grid(alpha=0.2)
+        plt.show()
+
+    def plot_distribution(self, x, dataset_name, var_name):
+        """
+        Plot the distribution (KDE) of a numerical variable.
+
+        Parameters
+        ----------
+        x : array-like
+            Data values.
 
         dataset_name : str
-            Name of dataset (Train/Test).
+            Dataset label.
+
+        var_name : str
+            Variable name for labeling.
         """
-
-        data = pd.DataFrame({
-            var_name: values,
-            "Loan_Status": loan_status
-        })
-
-        status_map = {
-            0: "Non-Default",
-            1: "Default"
-        }
-
-        # -------- GENERAL DISTRIBUTION --------
-        plt.figure(figsize=(10, 5))
-
-        sns.kdeplot(
-            x=data[var_name],
-            fill=True,
-            alpha=0.2,
-            linewidth=2
-        )
-
-        plt.title(f"{dataset_name} Distribution of {var_name}")
-        plt.xlabel(var_name)
-        plt.ylabel("Density")
-        plt.grid(alpha=0.2)
-        plt.show()
-
-        # -------- DISTRIBUTION PER STATUS (JUNTAS) --------
-        plt.figure(figsize=(10, 5))
-
-        for status_id, status_name in status_map.items():
-
-            sns.kdeplot(
-                x=data.loc[data["Loan_Status"] == status_id, var_name],
-                fill=True,
-                alpha=0.3,
-                linewidth=2,
-                label=status_name
-            )
-
-        plt.title(f"{dataset_name} {var_name} Distribution by Loan Status")
-        plt.xlabel(var_name)
-        plt.ylabel("Density")
-        plt.legend()
-        plt.grid(alpha=0.2)
-
-        plt.show()
-
-        # -------- INDIVIDUAL DISTRIBUTIONS --------
-        for status_id, status_name in status_map.items():
-
-            plt.figure(figsize=(10, 5))
-
-            sns.kdeplot(
-                x=data.loc[data["Loan_Status"] == status_id, var_name],
-                fill=True,
-                alpha=0.3,
-                linewidth=2
-            )
-
-            plt.title(f"{dataset_name} {var_name} - {status_name}")
-            plt.xlabel(var_name)
-            plt.ylabel("Density")
-            plt.grid(alpha=0.2)
-            plt.show()
-        
-    def plot_distribution(self , x , dataset_name, var_name):
-        
         plt.figure(figsize=(10, 5))
 
         sns.kdeplot(
@@ -189,12 +176,28 @@ class Visualization:
         plt.ylabel("Density")
         plt.grid(alpha=0.2)
         plt.show()
-        
-        
-    def plot_boxplot(self, data, x, y, hue=None, order=None):
-        import matplotlib.pyplot as plt
-        import seaborn as sns
 
+    def plot_boxplot(self, data, x, y, hue=None, order=None):
+        """
+        Plot a boxplot for a numerical variable grouped by categories.
+
+        Parameters
+        ----------
+        data : pd.DataFrame
+            Dataset containing variables.
+
+        x : str
+            Categorical variable.
+
+        y : str
+            Numerical variable.
+
+        hue : str, optional
+            Additional grouping variable.
+
+        order : list, optional
+            Order of categories for x-axis.
+        """
         plt.figure(figsize=(10, 5))
 
         ax = sns.boxplot(
@@ -203,40 +206,65 @@ class Visualization:
             y=y,
             hue=hue,
             order=order,
-            palette=["#4b4b4b", "#e74c3c"],   
-            showfliers=False,  
+            palette=["#4b4b4b", "#e74c3c"],
+            showfliers=False,
             linewidth=1.2
         )
 
-        # Mejor formato de labels
-        ax.set_title(f"{y.replace('_', ' ').title()} by {x.replace('_', ' ').title()}", fontsize=12)
-        ax.set_xlabel(x.replace('_', ' ').title(), fontsize=10)
-        ax.set_ylabel(y.replace('_', ' ').title(), fontsize=10)
+        ax.set_title(
+            f"{y.replace('_', ' ').title()} by {x.replace('_', ' ').title()}")
+        ax.set_xlabel(x.replace('_', ' ').title())
+        ax.set_ylabel(y.replace('_', ' ').title())
 
-        # Grid más sutil
         plt.grid(axis='y', alpha=0.2)
-
-        # Quitar borde superior/derecho (look más profesional)
         sns.despine()
         plt.tight_layout()
         plt.show()
 
-
-
     def plot_all(self, results, data):
-        self.plot_roc_curve(results['y_test'], results['y_prob'] , name="Test Set")
-        self.plot_roc_curve(results['y_train'], results['y_pred'] , name="Train Set")
+        """
+        Generate a full set of visualizations for model evaluation and analysis.
+
+        Parameters
+        ----------
+        results : dict
+            Dictionary containing model outputs (predictions, probabilities, labels).
+
+        data : pd.DataFrame
+            Dataset with engineered features and risk metrics.
+        """
+
+        # == ROC Curves ==
+        self.plot_roc_curve(results['y_test'],
+                            results['y_prob'], name="Test Set")
+        self.plot_roc_curve(
+            results['y_train'],
+            results['y_train_prob'], name="Train Set")
+
+        # == Confusion Matrix ==
         self.plot_confusion_matrix(results['y_test'], results['y_pred'])
-        self.plot_scatter(data ,hue = 'loan_status', x='predicted_pd', y='interest_rate')
-        self.plot_distribution(data['loan_amount'], dataset_name="Distribution of", var_name="Loan Amount")
-        self.plot_distribution(data['expected_loss'], dataset_name="Distribution of", var_name="Expected Loss")
-        self.plot_distribution(data['interest_rate'], dataset_name="Distribution of", var_name="Interest Rate")
-        self.plot_distribution(results['y_prob'], dataset_name="Test Set - Distribution of", var_name="PD")
-        self.plot_distribution(results['y_pred'], dataset_name="Train Set - Distribution of", var_name="PD")
+
+        # == Scatter Plots ==
+        self.plot_scatter(data, hue='loan_status',
+                          x='predicted_pd', y='interest_rate')
+
+        # == Distributions ==
+        self.plot_distribution(
+            data['loan_amount'], dataset_name="Distribution of", var_name="Loan Amount")
+        self.plot_distribution(
+            data['expected_loss'], dataset_name="Distribution of", var_name="Expected Loss")
+        self.plot_distribution(
+            data['interest_rate'], dataset_name="Distribution of", var_name="Interest Rate")
+        self.plot_distribution(
+            results['y_prob'], dataset_name="Test Set - Distribution of", var_name="PD")
+        self.plot_distribution(
+            results['y_pred'], dataset_name="Train Set - Distribution of", var_name="PD")
+
+        # == Bar Plots ==
         self.plot_bar(data, x='risk_bucket', y='predicted_pd')
         self.plot_bar(data, x='risk_bucket', y='expected_loss')
-        self.plot_variable_distribution_by_status(data['predicted_pd'], data['decision'], var_name="Predicted PD", dataset_name="Distribution of")
+
+        # == Box Plots ==
         self.plot_boxplot(data, x='risk_bucket', y='predicted_pd')
         self.plot_boxplot(data, x='risk_bucket', y='expected_loss')
         self.plot_boxplot(data, x='risk_bucket', y='interest_rate')
-        

@@ -9,60 +9,110 @@ from src.modeling.model_evaluation import ModelEvaluation
 
 
 class CreditPipeline:
+    """
+    End-to-end pipeline for credit risk modeling.
+
+    This pipeline handles data preparation, model training, prediction,
+    evaluation, risk metric computation (PD, LGD, EAD, Expected Loss),
+    and business decision logic.
+
+    Parameters
+    ----------
+    data : pd.DataFrame
+        Input dataset containing borrower and loan information.
+
+    model_name : str, optional
+        Name of the model to be used (default is "logistic").
+    """
 
     def __init__(self, data, model_name="logistic"):
         self.data = data
         self.model_name = model_name
 
     def run(self):
+        """
+        Execute the full credit risk pipeline.
+
+        Steps:
+        - Prepare and split data
+        - Train model
+        - Generate predictions and probabilities
+        - Evaluate model performance
+        - Compute risk metrics (PD, LGD, EAD, Expected Loss)
+        - Apply business rules (decision and risk segmentation)
+        - Save trained model
+
+        Returns
+        -------
+        results : dict
+            Dictionary containing evaluation metrics, predictions, probabilities,
+            and AUC scores.
+
+        data : pd.DataFrame
+            Dataset enriched with predicted PD, expected loss, decision,
+            and risk bucket segmentation.
+        """
 
         # 1. Data preparation
         prep = DataPreparation(self.data)
         X, y = prep.prepare_data()
 
-        # 2. Split
+        # 2. Train-test split
         splitter = DataSplitter()
         X_train, X_test, y_train, y_test = splitter.split(X, y)
 
-        # 2.5 Scaling
+        # 3. Scaling
         scaler = StandardScaler()
         X_train = scaler.fit_transform(X_train)
         X_test = scaler.transform(X_test)
 
-        # 3. Model
+        # 4. Model selection
         model = Model.get_model("classification", self.model_name)
 
-        # 4. Train
+        # 5. Training
         model.train(X_train, y_train)
 
-        # 5. Predict
+        # 6. Predictions (Test)
         y_pred = model.predict(X_test)
-        y_pred_proba = model.predict_proba(X_test)
+        y_test_proba = model.predict_proba(X_test)
 
-        # 6. Evaluate
+        # 7. Predictions (Train)
+        y_train_proba = model.predict_proba(X_train)
+
+        # 8. Evaluation
         evaluator = ModelEvaluation()
-        results = evaluator.evaluate(y_test, y_pred, y_pred_proba)
-        results["y_test"] = y_test
-        results["y_pred"] = y_pred
-        results["y_prob"] = y_pred_proba
-        
-        # 7. PD calculation
+
+        results = evaluator.evaluate_full(
+            y_train=y_train,
+            y_train_proba=y_train_proba,
+            y_test=y_test,
+            y_test_pred=y_pred,
+            y_test_proba=y_test_proba
+        )
+
+        # 9. PD calculation (full dataset)
         risk = RiskCalculator(lgd=0.45)
+
         X_scaled = scaler.transform(X)
         pd_values = risk.calculate_pd(model, X_scaled)
+
         self.data["predicted_pd"] = pd_values
 
-        # 8. Risk metrics
+        # 10. Risk metrics
         ead = risk.calculate_ead(self.data)
         lgd = risk.calculate_lgd(self.data)
-        self.data['expected_loss'] = risk.calculate_expected_loss(pd_values, lgd, ead)
-        
-        # 9. Business logic
-        logic = BusinessLogic(threshold=0.4)
-        self.data['decision'] = logic.credit_decision(pd_values)
-        self.data['risk_bucket'] = logic.risk_buckets(pd_values)
 
-        # 10. Save model
+        self.data["expected_loss"] = risk.calculate_expected_loss(
+            pd_values, lgd, ead
+        )
+
+        # 11. Business logic
+        logic = BusinessLogic(threshold=0.4)
+
+        self.data["decision"] = logic.credit_decision(pd_values)
+        self.data["risk_bucket"] = logic.risk_buckets(pd_values)
+
+        # 12. Save model
         model.save_model(f"{self.model_name}.pkl", MODELS_DIR)
 
         return results, self.data

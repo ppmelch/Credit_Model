@@ -107,3 +107,27 @@ class ModelEvaluation:
         
         return results
         '''
+        
+    def evaluate_full(self, y_train, y_train_proba, y_test, y_test_pred, y_test_proba):
+        """
+        Perform full evaluation including train/test metrics and return structured results.
+        """
+
+        results = {}
+
+        # --- Test metrics ---
+        test_metrics = self._evaluate_classification(y_test, y_test_pred, y_test_proba)
+        results.update({f"test_{k}": v for k, v in test_metrics.items()})
+
+        # --- Train metrics (solo AUC porque no tienes y_pred train) ---
+        results["train_roc_auc"] = roc_auc_score(y_train, y_train_proba)
+
+        # --- Store raw outputs ---
+        results["y_test"] = y_test
+        results["y_pred"] = y_test_pred
+        results["y_prob"] = y_test_proba
+
+        results["y_train"] = y_train
+        results["y_train_prob"] = y_train_proba
+
+        return results
