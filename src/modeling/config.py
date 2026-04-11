@@ -20,19 +20,21 @@ MODEL_CONFIG = {
 
     "random_forest": {
         "n_estimators": 1000,
-        "max_depth": 6,
+        "max_depth": 2,
         "random_state": 42,
         "class_weight": "balanced",
         "n_jobs": -1
     },
 
     "xgboost": {
+        "objective" : "binary:logistic",
+        "n_estimators": 250,
+        "max_depth": 2,
+        "learning_rate": 0.01,
+        "subsample": 0.7,
+        "colsample_bytree": 0.8,
         "eval_metric": "logloss",
-        "n_estimators": 100,
-        "learning_rate": 0.1,
-        "max_depth": 6,
-        "subsample": 0.8,
-        "colsample_bytree": 0.8
+        "random_state": 42
     }
 }
 

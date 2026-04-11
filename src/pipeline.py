@@ -1,7 +1,6 @@
 from src.modeling.model import Model
 from src.modeling.config import MODELS_DIR
 from src.data.data_splitter import DataSplitter
-from sklearn.preprocessing import StandardScaler
 from src.data.data_preparation import DataPreparation
 from src.modeling.business_logic import BusinessLogic
 from src.modeling.risk_calculator import RiskCalculator

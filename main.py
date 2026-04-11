@@ -31,14 +31,14 @@ def main():
     data = pd.read_csv("data/dataset.csv")
 
     # == Initialize pipeline ==
-    pipeline = CreditPipeline(data=data, model_name="random_forest")
+    pipeline = CreditPipeline(data=data, model_name="xgboost")
 
     # == Run pipeline ==
     results, data_final = pipeline.run()
 
     # == Print results (optional) ==
     printer = PrintUtils(data_final)
-    printer.print_all(results) 
+    printer.print_all(results)
 
     # == Visualizations ==
     viz = Visualization()
@@ -46,6 +46,7 @@ def main():
 
     # == Save results (optional) ==
     data_final.to_csv("data/results.csv", index=False)
+
 
 if __name__ == "__main__":
     main()
