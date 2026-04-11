@@ -62,8 +62,8 @@ flowchart TD
 
     MODELS --> rf[random_forest.pkl]
 
-    NB --> notebook[notebook.ipynb]
-    NB --> notebook[feature_analysis.ipynb]
+    NB1 --> notebook1[notebook.ipynb]
+    NB2 --> notebook2[feature_analysis.ipynb]
 
     DOCS --> pdf[Credit_Model.pdf]
 
