@@ -26,47 +26,61 @@
 ### Project Structure
 ```mermaid
 flowchart TD
+
     ROOT[Credit_Model/]
 
-    ROOT --> DATA[data/]
-    ROOT --> SRC[src/]
-    ROOT --> NB[notebooks/]
-    ROOT --> DOCS[docs/]
+    ROOT --> DATA
+    ROOT --> SRC
+    ROOT --> NB
+    ROOT --> DOCS
     ROOT --> MAIN[main.py]
     ROOT --> REQ[requirements.txt]
     ROOT --> README[README.md]
 
-    DATA --> dataset[dataset.csv]
-    DATA --> results[results.csv]
+    subgraph DATA[data/]
+        dataset[dataset.csv]
+        results[results.csv]
+    end
 
-    SRC --> DATAR[data/]
-    SRC --> MODELING[modeling/]
-    SRC --> VIZ[visualization/]
-    SRC --> UTILS[utils/]
-    SRC --> MODELS[models/]
+    subgraph SRC[src/]
 
-    DATAR --> dp[data_preparation.py]
-    DATAR --> ds[data_splitter.py]
+        subgraph DATAR[data/]
+            dp[data_preparation.py]
+            ds[data_splitter.py]
+        end
 
-    MODELING --> bm[base_model.py]
-    MODELING --> bl[business_logic.py]
-    MODELING --> cm[classification_model.py]
-    MODELING --> cfg[config.py]
-    MODELING --> me[model_evaluation.py]
-    MODELING --> mod[model.py]
-    MODELING --> rc[risk_calculator.py]
+        subgraph MODELING[modeling/]
+            bm[base_model.py]
+            bl[business_logic.py]
+            cm[classification_model.py]
+            cfg[config.py]
+            me[model_evaluation.py]
+            mod[model.py]
+            rc[risk_calculator.py]
+        end
 
-    VIZ --> viz[viz.py]
+        subgraph VIZ[visualization/]
+            viz[viz.py]
+        end
 
-    UTILS --> prints[prints.py]
+        subgraph UTILS[utils/]
+            prints[prints.py]
+        end
 
-    MODELS --> rf[random_forest.pkl]
+        subgraph MODELS[models/]
+            rf[random_forest.pkl]
+        end
 
-    NB --> NB1[notebook.ipynb]
-    NB --> NB2[feature_analysis.ipynb]
+    end
 
-    DOCS --> pdf[Credit_Model.pdf]
+    subgraph NB[notebooks/]
+        nb1[notebook.ipynb]
+        nb2[feature_analysis.ipynb]
+    end
 
+    subgraph DOCS[docs/]
+        pdf[Credit_Model.pdf]
+    end
 ```
 
 ### Functional Architecture
