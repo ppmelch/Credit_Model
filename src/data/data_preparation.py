@@ -73,7 +73,7 @@ class DataPreparation:
 
         # Features
         X = self.data.drop(
-            columns=["Unnamed: 0", "loan_status", "interest_rate"]
+            columns=["loan_status", "interest_rate"]
         )
 
         # Encoding
