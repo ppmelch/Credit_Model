@@ -237,48 +237,52 @@ graph LR
 ```mermaid
 flowchart LR
 
-    A[Raw Data] --> B[Data Preparation]
+    A[Raw Dataset] --> B[Data Preparation]
 
-    B --> C[X y]
-    C --> D[Train Test Split]
+    B --> C[Feature / Target Split]
 
-    D --> Xtr[X_train]
-    D --> Xte[X_test]
-    D --> Ytr[y_train]
-    D --> Yte[y_test]
+    C --> D[Train-Test Split]
 
-    Xtr --> E[Model Selection]
-    E --> F[Train Model]
+    D --> E[Training Dataset]
+    D --> F[Testing Dataset]
 
-    F --> G[Predict y_pred Test]
-    F --> H[Predict PD Test]
-    F --> I[Predict PD Train]
+    E --> G[Model Selection]
 
-    G --> J[Model Evaluation]
-    H --> J
-    I --> J
-    Yte --> J
-    Ytr --> J
+    G --> H[Model Training]
 
-    F --> K[PD Full Dataset]
-    K --> L[EAD]
-    K --> M[LGD]
+    H --> I[Prediction Engine]
 
-    K --> N[Expected Loss]
-    L --> N
-    M --> N
+    I --> J[Classification Prediction]
+    I --> K[PD Probability Estimation]
 
-    K --> O[Credit Decision]
-    K --> P[Risk Buckets]
+    J --> L[Model Evaluation]
+    K --> L
+    F --> L
 
-    N --> Q[Final Dataset]
-    O --> Q
-    P --> Q
+    K --> M[Portfolio PD Estimation]
 
-    F --> R[Save Model]
+    M --> N[EAD Calculation]
+    M --> O[LGD Calculation]
 
-    J --> S[Results Metrics]
-    Q --> T[Enriched Dataset]
+    M --> P[Expected Loss]
+    N --> P
+    O --> P
+
+    M --> Q[Credit Decision]
+    M --> R[Risk Bucket Assignment]
+    M --> S[Interest Rate Pricing]
+
+    P --> T[Final Credit Dataset]
+    Q --> T
+    R --> T
+    S --> T
+
+    H --> U[Model Persistence]
+
+    L --> V[Performance Metrics]
+
+    T --> W[Risk-Enriched Portfolio]
+
 ```
 
 
