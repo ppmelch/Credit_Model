@@ -13,11 +13,15 @@ class BusinessLogic:
         Clients with PD below this threshold are approved.
     """
 
-    def __init__(self, threshold=0.4, LGD=0.45 , factor=1.5, rf=0.037):
+    def __init__(self, threshold=0.4, LGD=0.45 , rf=0.0364,
+                 inflation_premium=0.024, liquidity_premium=0.0326, admin_cost=0.02, profit_margin=0.0116):
         self.threshold = threshold
         self.LGD = LGD
-        self.factor = factor
         self.rf = rf
+        self.inflation_premium = inflation_premium
+        self.liquidity_premium = liquidity_premium
+        self.admin_cost = admin_cost
+        self.profit_margin = profit_margin
 
     def credit_decision(self, pd_values: pd.Series) -> pd.Series:
         """
@@ -75,6 +79,6 @@ class BusinessLogic:
         Higher PD -> higher interest rate.
         """
         
-        risk_premium = pd_values * self.LGD * self.factor
+        risk_premium = pd_values * self.LGD 
 
-        return self.rf + risk_premium
+        return self.rf + self.inflation_premium + risk_premium + self.liquidity_premium + self.admin_cost + self.profit_margin

@@ -108,26 +108,64 @@ class ModelEvaluation:
         return results
         '''
         
-    def evaluate_full(self, y_train, y_train_proba, y_test, y_test_pred, y_test_proba):
+    def evaluate_full(self, y_train,y_train_pred ,y_train_proba, y_test, y_test_pred, y_test_proba):
         """
-        Perform full evaluation including train/test metrics and return structured results.
+        Perform full train/test evaluation and return structured results.
+
+        Parameters
+        ----------
+        y_train : pd.Series
+            True training labels.
+
+        y_train_pred : np.ndarray
+            Predicted training labels.
+
+        y_train_proba : np.ndarray
+            Predicted training probabilities.
+
+        y_test : pd.Series
+            True testing labels.
+
+        y_test_pred : np.ndarray
+            Predicted testing labels.
+
+        y_test_proba : np.ndarray
+            Predicted testing probabilities.
+
+        Returns
+        -------
+        dict
+            Dictionary containing train/test metrics and raw predictions.
         """
 
         results = {}
 
-        # --- Test metrics ---
-        test_metrics = self._evaluate_classification(y_test, y_test_pred, y_test_proba)
-        results.update({f"test_{k}": v for k, v in test_metrics.items()})
+        test_metrics = self._evaluate_classification(
+            y_test,
+            y_test_pred,
+            y_test_proba
+        )
 
-        # --- Train metrics (solo AUC porque no tienes y_pred train) ---
-        results["train_roc_auc"] = roc_auc_score(y_train, y_train_proba)
+        results.update({
+            f"test_{k}": v for k, v in test_metrics.items()
+        })
 
-        # --- Store raw outputs ---
+        train_metrics = self._evaluate_classification(
+            y_train,
+            y_train_pred,
+            y_train_proba
+        )
+
+        results.update({
+            f"train_{k}": v for k, v in train_metrics.items()
+        })
+
         results["y_test"] = y_test
         results["y_pred"] = y_test_pred
         results["y_prob"] = y_test_proba
 
         results["y_train"] = y_train
+        results["y_train_pred"] = y_train_pred
         results["y_train_prob"] = y_train_proba
 
         return results

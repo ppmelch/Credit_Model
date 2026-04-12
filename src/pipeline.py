@@ -72,12 +72,14 @@ class CreditPipeline:
 
         # 7. Predictions (Train)
         y_train_proba = model.predict_proba(X_train)
+        y_train_pred = model.predict(X_train)
 
         # 8. Evaluation
         evaluator = ModelEvaluation()
 
         results = evaluator.evaluate_full(
             y_train=y_train,
+            y_train_pred=y_train_pred,
             y_train_proba=y_train_proba,
             y_test=y_test,
             y_test_pred=y_pred,
@@ -98,7 +100,8 @@ class CreditPipeline:
         )
 
         # 11. Business logic
-        logic = BusinessLogic(threshold=0.4 , LGD=0.45 , factor=1.5 , rf=0.037)
+        logic = BusinessLogic(threshold=0.4, LGD=0.45 , rf=0.0364,
+                 inflation_premium=0.024, liquidity_premium=0.0326, admin_cost=0.02, profit_margin=0.0116)
         self.data["decision"] = logic.credit_decision(pd_values)
         self.data["risk_bucket"] = logic.risk_buckets(pd_values)
         self.data["interest_rate_model"] = logic.calculate_interest_rate(pd_values)
