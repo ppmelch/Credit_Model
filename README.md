@@ -7,7 +7,9 @@
 - David Campos Ambriz — 7444435
  
 **Course:** Credit Models
+
 **Institution:** ITESO Universidad Jesuita de Guadalajara
+
 **Date:** April 13, 2026
  
 ---
